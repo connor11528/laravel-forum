@@ -20,3 +20,4 @@ Auth::routes();
 Route::get('/home', 'HomeController@index');
 Route::get('/threads', 'ThreadController@index');
 Route::get('/threads/{thread}', 'ThreadController@show');
+Route::post('/threads/{thread}/replies', 'ReplyController@store');
