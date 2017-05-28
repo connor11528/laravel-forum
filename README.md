@@ -12,3 +12,5 @@ I'm blogging my way through the advanced Laracast course: [Let's Build A Forum w
 ### [Part 3](https://medium.com/@connorleech/build-an-online-forum-with-laravel-analyzing-the-application-part-3-9317a0f893b4): Post and Show Replies to Threads
 
 ### [Part 4](https://medium.com/@connorleech/build-an-online-forum-with-laravel-give-the-user-the-ability-to-create-threads-part-4-ccdb6badc618): Give the User the ability to create Threads
+
+### [Part 5](https://medium.com/@connorleech/testing-helpers-in-laravel-5-4-363ac47a8504): Testing Helpers in Laravel 5.4
