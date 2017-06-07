@@ -23,6 +23,9 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
     ];
 });
 
+
+// quickly create fifty threads using $ php artisan tinker, then:
+// factory('App\Thread', 50)->create();
 $factory->define(App\Thread::class, function(Faker\Generator $faker){
 	return [
 		'user_id' => function(){
