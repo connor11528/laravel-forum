@@ -3,6 +3,8 @@ Laravel Forum
 
 I'm blogging my way through the advanced Laracast course: [Let's Build A Forum with Laravel and TDD](https://laracasts.com/series/lets-build-a-forum-with-laravel/)
 
+![](https://user-images.githubusercontent.com/3578908/26895669-24e15fb2-4b77-11e7-8b9f-5a3873f279d4.png)
+
 ## Build an online forum with Laravel
 
 ### [Part 1](https://medium.com/@connorleech/build-an-online-forum-with-laravel-initial-setup-and-seeding-part-1-a53138d1fffc): Initial Setup and Seeding
