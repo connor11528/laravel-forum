@@ -27,10 +27,18 @@ class ThreadController extends Controller
         // we grab the channel by the slug
         if($channel->exists){
             // grab its associated threads
-            $threads = $channel->threads()->latest()->get();
+            $threads = $channel->threads()->latest();
         } else {
-            $threads = Thread::latest()->get();
+            $threads = Thread::latest();
         }
+
+        // if request 'by' then filter for given username
+        if($username = request('by')){
+            $user = \App\User::where('name', $username)->firstOrFail();
+            $threads->where('user_id', $user->id);
+        }
+
+        $threads = $threads->get();
         
         return view('threads.index', compact('threads'));
     }
