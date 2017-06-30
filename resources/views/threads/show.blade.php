@@ -7,7 +7,9 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4>{{ $thread->title }}</h4>
-                    Posted by <a href='#'>{{ $thread->creator->name }}</a>
+
+                    <!-- Using a named route. Same as "/profiles/{{ $thread->creator->name }}" -->
+                    Posted by <a href="{{ route('profile', $thread->creator) }}">{{ $thread->creator->name }}</a>
                 </div>
 
                 <div class="panel-body">
