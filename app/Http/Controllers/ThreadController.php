@@ -20,8 +20,6 @@ class ThreadController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index(Channel $channel, ThreadFilters $filters)
     {
@@ -37,8 +35,6 @@ class ThreadController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
@@ -47,9 +43,6 @@ class ThreadController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -71,17 +64,44 @@ class ThreadController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  integer $channelId
-     * @param  \App\Thread  $thread
-     * @return \Illuminate\Http\Response
      */
-    public function show($channelId, Thread $thread)
+    public function show($channel, Thread $thread)
     {
         return view('threads.show', [
             'thread' => $thread,
             'replies' => $thread->replies()->paginate(10)
         ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Thread $thread)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Thread $thread)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($channel, Thread $thread)
+    {
+        $thread->replies()->delete();
+        $thread->delete();
+
+        if(request()->wantsJson()){
+            return response([], 204);
+        }
+        
+        return redirect('/threads');
     }
 
     // Fetch all relevant threads
@@ -93,39 +113,5 @@ class ThreadController extends Controller
         }
 
         return $threads->get();
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Thread  $thread
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Thread $thread)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Thread  $thread
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Thread $thread)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Thread  $thread
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Thread $thread)
-    {
-        //
     }
 }

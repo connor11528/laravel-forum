@@ -64,7 +64,41 @@ class CreateThreadsTest extends TestCase
     		->assertSessionHasErrors('channel_id');
     }
 
-    public function publishThread($overrides = [])
+    /** @test */
+    public function a_thread_can_be_deleted()
+    {
+        $this->signIn();
+
+        $thread = create('App\Thread');
+        $reply = create('App\Reply', ['thread_id' => $thread->id]);
+
+        $response = $this->json('DELETE', $thread->path());
+
+        $response->assertStatus(204);
+
+        $this->assertDatabaseMissing('threads', ['id' => $thread->id]);
+        $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
+
+    }
+
+    /** @test */
+    public function guests_cannot_delte_threads()
+    {
+        $this->withExceptionHandling();
+        $thread = create('App\Thread');
+        $response = $this->delete($thread->path());
+
+        $response->assertRedirect('/login');
+    }
+
+    /** @test */
+    function threads_may_only_be_deleted_by_those_who_have_permission()
+    {
+        // TODO
+    }
+
+
+    protected function publishThread($overrides = [])
     {
     	// laravel can catch exception and perform redirect
     	$this->withExceptionHandling()
@@ -72,5 +106,5 @@ class CreateThreadsTest extends TestCase
 
     	$thread = make('App\Thread', $overrides);
     	return $this->post('/threads', $thread->toArray());
-    }
+    }  
 }

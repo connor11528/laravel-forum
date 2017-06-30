@@ -6,10 +6,20 @@
         <div class="col-md-8">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h4>{{ $thread->title }}</h4>
+                    <div class='level'>
+                        <span class='flex'>
+                            <h4>{{ $thread->title }}</h4>
 
-                    <!-- Using a named route. Same as "/profiles/{{ $thread->creator->name }}" -->
-                    Posted by <a href="{{ route('profile', $thread->creator) }}">{{ $thread->creator->name }}</a>
+                            <!-- Using a named route. Same as "/profiles/{{ $thread->creator->name }}" -->
+                            Posted by <a href="{{ route('profile', $thread->creator) }}">{{ $thread->creator->name }}</a>
+                        </span>
+
+                        <form action="{{$thread->path()}}" method='POST'>
+                            {{ csrf_field() }}
+                            {{ method_field('DELETE') }}
+                            <button type='submit' class='btn btn-danger'>Delete</button>
+                        </form>
+                    </div>
                 </div>
 
                 <div class="panel-body">
