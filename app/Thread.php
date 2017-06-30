@@ -10,6 +10,16 @@ class Thread extends Model
 {
     protected $guarded = [];
     
+    protected static function boot()
+    {
+        parent::boot();
+
+        // query scope automatically applied to app queries
+        static::addGlobalScope('replyCount', function($builder){
+            $builder->withCount('replies');
+        });
+    }
+
     public function path()
     {
     	return "/threads/{$this->channel->slug}/{$this->id}";
