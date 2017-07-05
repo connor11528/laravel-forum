@@ -42,14 +42,18 @@ class ActivityTest extends TestCase
 	/** @test */
 	function it_fetches_a_feed_for_any_user()
 	{
+		// Given we have a thread
 		$this->signIn();
 
 		create('App\Thread', ['user_id' => auth()->id() ], 2);
 
+		// and another thread from a week ago
 		auth()->user()->activity()->first()->update(['created_at' => Carbon::now()->subWeek()]);
 
+		// fetch the user's activity feed
 		$feed = Activity::feed(auth()->user(), 50);
 
+		// then it should be returned in the proper format
 		$this->assertTrue($feed->keys()->contains(
 			Carbon::now()->format('Y-m-d')
 		));
