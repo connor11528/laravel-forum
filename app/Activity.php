@@ -8,4 +8,9 @@ class Activity extends Model
 {
     // disable mass assignment exception
     protected $guarded = [];
+
+    public function subject()
+    {
+    	return $this->morphTo();
+    }
 }

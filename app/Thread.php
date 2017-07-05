@@ -2,13 +2,14 @@
 
 namespace App;
 
-use App\Activity;
 use App\Filters\ThreadFilters;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Thread extends Model
 {
+    use RecordsActivity;
+
     protected $guarded = [];
 
     protected $with = ['creator', 'channel'];
@@ -26,18 +27,6 @@ class Thread extends Model
         // delete associated replies when removing thread
         static::deleting(function($thread){
             $thread->replies()->delete();
-        });
-
-        // create activity when thread created
-        static::created(function($thread){
-            $userId = auth()->id() ? auth()->id() : 1;
-            
-            Activity::create([
-                'user_id' => $userId,
-                'type' => 'created_thread',
-                'subject_id' => $thread->id,
-                'subject_type' => 'App\Thread'
-            ]);
         });
     }
 
