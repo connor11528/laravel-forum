@@ -95,9 +95,8 @@ class ThreadController extends Controller
     public function destroy($channel, Thread $thread)
     {
         // check that it is signed in user's thread
-        if($thread->user_id != auth()->id()){
-            abort(403);
-        }
+        // https://laravel.com/docs/5.4/authorization#via-controller-helpers
+        $this->authorize('update', $thread);
 
         $thread->replies()->delete();
         $thread->delete();

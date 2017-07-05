@@ -13,7 +13,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        'App\Model' => 'App\Policies\ModelPolicy',
+        'App\Thread' => 'App\Policies\ThreadPolicy',
     ];
 
     /**
@@ -25,6 +25,9 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        // if return true in before method, instantly authorized
+        Gate::before(function($user){
+            if($user->name == 'Connor Leech') return true;
+        });
     }
 }
