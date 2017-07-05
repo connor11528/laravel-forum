@@ -15,6 +15,10 @@ trait RecordsActivity
 				$model->recordActivity($event);
 			});
 		}
+
+		static::deleting(function($model){
+			$model->activity()->delete();
+		});
 	}
 
 	// Fetch all model events that require activity recording
