@@ -1,6 +1,6 @@
 <?php
 
-if(getenv('APP_ENV')){
+if(getenv('APP_ENV') == 'production'){
     // https://mattstauffer.co/blog/laravel-on-heroku-using-a-mysql-database
     $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
     $host = $url["host"];
