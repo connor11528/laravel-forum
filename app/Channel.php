@@ -5,9 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 
 class Channel extends Model
-{
-    public $table = 'channel';
-    
+{    
     // customizing the key name so we fetch by slug instead of id
     // https://laravel.com/docs/5.4/routing#route-model-binding
     public function getRouteKeyName()
