@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
 
         // For Heroku
         // https://laravel-news.com/laravel-5-4-key-too-long-error
-        Schema::defaultStringLength(191);
+        \Schema::defaultStringLength(191);
     }
 
     /**
