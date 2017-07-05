@@ -38,4 +38,10 @@ class User extends Authenticatable
     {
         return 'name';
     }
+
+    // Get all activity for the user
+    public function activity()
+    {
+        return $this->hasMany(Activity::class);
+    }
 }
