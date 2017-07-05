@@ -14,7 +14,7 @@ if(env('production')){
         'database' => $database,
         'username' => $username,
         'password' => $password,
-        'port' => env('DB_PORT', 3306),
+        'port' => env('DB_PORT', 33060),
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_unicode_ci',
         'prefix' => ''
@@ -37,6 +37,8 @@ if(env('production')){
         'engine' => null,
     ];
 }
+
+dd($mySqlConfig);
 
 return [
 
