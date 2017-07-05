@@ -1,6 +1,6 @@
 <?php
 
-if(env('production')){
+if(getenv('APP_ENV')){
     // https://mattstauffer.co/blog/laravel-on-heroku-using-a-mysql-database
     $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
     $host = $url["host"];
@@ -14,7 +14,7 @@ if(env('production')){
         'database' => $database,
         'username' => $username,
         'password' => $password,
-        'port' => env('DB_PORT', 33060),
+        'port' => env('DB_PORT', 3306),
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_unicode_ci',
         'prefix' => ''
@@ -37,8 +37,6 @@ if(env('production')){
         'engine' => null,
     ];
 }
-
-dd($mySqlConfig);
 
 return [
 
