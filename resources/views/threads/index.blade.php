@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-            @foreach($threads as $thread)
+            @forelse($threads as $thread)
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class='level'>
@@ -23,7 +23,9 @@
                     </div>
                 </div>
             </div>
-            @endforeach
+            @empty
+            <p>There are no threads in this category yet. <a href='/threads/create'>Create one!</a></p>
+            @endforelse
         </div>
     </div>
 </div>

@@ -94,6 +94,11 @@ class ThreadController extends Controller
      */
     public function destroy($channel, Thread $thread)
     {
+        // check that it is signed in user's thread
+        if($thread->user_id != auth()->id()){
+            abort(403);
+        }
+
         $thread->replies()->delete();
         $thread->delete();
 
