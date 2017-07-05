@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Activity;
 use App\Filters\ThreadFilters;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,7 @@ class Thread extends Model
 
     protected $with = ['creator', 'channel'];
     
+    // Boot the model
     protected static function boot()
     {
         parent::boot();
@@ -19,6 +21,23 @@ class Thread extends Model
         // query scope automatically applied to app queries
         static::addGlobalScope('replyCount', function($builder){
             $builder->withCount('replies');
+        });
+
+        // delete associated replies when removing thread
+        static::deleting(function($thread){
+            $thread->replies()->delete();
+        });
+
+        // create activity when thread created
+        static::created(function($thread){
+            $userId = auth()->id() ? auth()->id() : 1;
+            
+            Activity::create([
+                'user_id' => $userId,
+                'type' => 'created_thread',
+                'subject_id' => $thread->id,
+                'subject_type' => 'App\Thread'
+            ]);
         });
     }
 

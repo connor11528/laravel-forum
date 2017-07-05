@@ -98,7 +98,6 @@ class ThreadController extends Controller
         // https://laravel.com/docs/5.4/authorization#via-controller-helpers
         $this->authorize('update', $thread);
 
-        $thread->replies()->delete();
         $thread->delete();
 
         if(request()->wantsJson()){
