@@ -42,6 +42,9 @@
         @include('layouts.nav')
 
         @yield('content')
+
+            <flash message="{{ session('flash')}}" ></flash>
+
     </div>
 
     <!-- Scripts -->
@@ -50,5 +53,6 @@
     @else
         <script src="{{ asset('js/app.js') }}"></script>
     @endif
+
 </body>
 </html>
