@@ -53,7 +53,10 @@ class ParticipateInForumTest extends TestCase
 
         $this->signIn();
 
+        // todo
         $this->delete("/replies/{$reply->id}")
-            ->assertRedirect('login');
+            ->redirect();
+
+        $this->assertDatabaseMissing($reply);
     }
 }

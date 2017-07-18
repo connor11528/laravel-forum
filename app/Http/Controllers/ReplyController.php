@@ -27,6 +27,8 @@ class ReplyController extends Controller
     }
 
     public function destroy(Reply $reply){
+
+        $this->authorize();
         $reply->delete();
 
         return back();
