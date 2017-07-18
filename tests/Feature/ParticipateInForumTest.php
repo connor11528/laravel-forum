@@ -41,4 +41,19 @@ class ParticipateInForumTest extends TestCase
         $this->post($thread->path() . '/replies', $reply->toArray())
             ->assertSessionHasErrors('body');
     }
+
+    /** @test */
+    function unauthorized_users_cannot_delete_replies(){
+        $this->withExceptionHandling();
+
+        $reply = make('App\Reply', ['body' => 'this is the reply']);
+
+        $this->delete("/replies/{$reply->id}")
+            ->assertRedirect('login');
+
+        $this->signIn();
+
+        $this->delete("/replies/{$reply->id}")
+            ->assertRedirect('login');
+    }
 }
