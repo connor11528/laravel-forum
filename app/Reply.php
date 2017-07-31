@@ -14,6 +14,9 @@ class Reply extends Model
     // eager load relationship for every query
     protected $with = ['owner', 'favorites'];
 
+    // append custom attribute (getFavoritesCountAttribute) from Trait
+    protected $appends = ['favoritesCount', 'isFavorited'];
+
 	// A Reply has an owner
     public function owner()
     {
