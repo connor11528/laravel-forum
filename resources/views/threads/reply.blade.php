@@ -6,7 +6,6 @@
             		<a href="{{ route('profile', $reply->owner) }}">{{ $reply->owner->name }}</a> said {{ $reply->created_at->diffForHumans() }}...
             	</h5>
             	<div>
-
             		<form method='post' action='/replies/{{ $reply->id }}/favorites'>
             			{{ csrf_field() }}
 
@@ -34,14 +33,8 @@
 
         @can('update', $reply)
             <div class='panel-footer level'>
-
                 <span class='btn btn-primary btn-xs mr-1' @click="editing = true">Edit</span>
-
-                <form method="POST" action="/replies/{{ $reply->id }}">
-                    {{ csrf_field() }}
-                    {{ method_field('DELETE') }}
-                    <button type='submit' class='btn btn-danger btn-xs'>Delete</button>
-                </form>
+                <span class='btn btn-danger btn-xs mr-1' @click="destroy">Delete</span>
             </div>
         @endcan
     </div>

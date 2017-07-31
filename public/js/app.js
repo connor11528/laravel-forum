@@ -42355,6 +42355,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			this.editing = false;
 			flash('Your reply was updated');
+		},
+		destroy: function destroy() {
+			axios.delete("/replies/" + this.attributes.id);
+
+			// old school jQuery fadeOut
+			$(this.$el).fadeOut(300, function () {
+				flash('Your reply has been deleted');
+			});
 		}
 	}
 });
