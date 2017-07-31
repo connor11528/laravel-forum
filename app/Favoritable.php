@@ -6,6 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 trait Favoritable
 {
+    // delete favorites when reply is deleted
+    protected static function bootFavoritable()
+    {
+        static::deleting(function($model){
+            // get the collection of favorited instances and delete them
+            $model->favorites->each->delete();
+        });
+    }
+
 	public function favorites()
     {
     	// polymorphic relation
@@ -28,7 +37,8 @@ trait Favoritable
         $attributes = ['user_id' => auth()->id()];
         
         // get favorites of reply, find the logged in user's favorite, delete it
-        $this->favorites()->where($attributes)->delete();
+        // also deletes associated activity (have to call delete on favorites instance itself)
+        $this->favorites()->where($attributes)->get()->each->delete();
     }
 
     public function isFavorited()
