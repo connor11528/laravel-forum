@@ -9,7 +9,7 @@
         props: ['message'],
         data(){
             return {
-                body: this.message,
+                body: '',
                 show: false
             }
         },
@@ -18,7 +18,7 @@
                 this.flash(this.message);
             }
 
-            window.events.$on('flash', message => this.flash(this.message));
+            window.events.$on('flash', message => this.flash(message));
         },
         methods: {
             flash(message){
