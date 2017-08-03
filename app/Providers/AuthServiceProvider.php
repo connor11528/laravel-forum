@@ -28,8 +28,8 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         // if return true in before method, instantly authorized
-        Gate::before(function($user){
-            if($user->name == 'Connor Leech') return true;
-        });
+        // Gate::before(function($user){
+        //     if($user->name == 'Connor Leech') return true;
+        // });
     }
 }

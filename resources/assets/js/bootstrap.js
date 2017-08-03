@@ -2,6 +2,14 @@
 window._ = require('lodash');
 window.Vue = require('vue');
 
+// Vue authorization helper method
+Vue.prototype.authorize = function(handler){
+	// can add additional admin privileges here
+	let user = window.App.user;
+
+	return user ? handler(user) : false;
+};
+
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
  * for JavaScript based Bootstrap features such as modals and tabs. This
@@ -22,7 +30,7 @@ try {
 
 window.axios = require('axios');
 
-window.axios.defaults.headers.common['X-CSRF-TOKEN'] = window.Laravel.csrfToken;
+window.axios.defaults.headers.common['X-CSRF-TOKEN'] = window.App.csrfToken;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 // Events bus

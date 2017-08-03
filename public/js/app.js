@@ -371,6 +371,103 @@ module.exports = {
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// this module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -469,103 +566,6 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(20)))
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// this module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
-
 
 /***/ }),
 /* 3 */
@@ -10937,7 +10937,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(11);
-module.exports = __webpack_require__(49);
+module.exports = __webpack_require__(58);
 
 
 /***/ }),
@@ -10962,7 +10962,7 @@ window.Vue = __webpack_require__(4);
  */
 
 Vue.component('flash', __webpack_require__(36));
-Vue.component('reply', __webpack_require__(44));
+Vue.component('thread-view', __webpack_require__(44));
 
 var app = new Vue({
   el: '#app'
@@ -10975,6 +10975,14 @@ var app = new Vue({
 
 window._ = __webpack_require__(13);
 window.Vue = __webpack_require__(4);
+
+// Vue authorization helper method
+Vue.prototype.authorize = function (handler) {
+  // can add additional admin privileges here
+  var user = window.App.user;
+
+  return user ? handler(user) : false;
+};
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -10996,7 +11004,7 @@ try {
 
 window.axios = __webpack_require__(17);
 
-window.axios.defaults.headers.common['X-CSRF-TOKEN'] = window.Laravel.csrfToken;
+window.axios.defaults.headers.common['X-CSRF-TOKEN'] = window.App.csrfToken;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 // Events bus
@@ -40785,7 +40793,7 @@ module.exports = __webpack_require__(18);
 var utils = __webpack_require__(0);
 var bind = __webpack_require__(5);
 var Axios = __webpack_require__(19);
-var defaults = __webpack_require__(1);
+var defaults = __webpack_require__(2);
 
 /**
  * Create an instance of Axios
@@ -40841,7 +40849,7 @@ module.exports.default = axios;
 "use strict";
 
 
-var defaults = __webpack_require__(1);
+var defaults = __webpack_require__(2);
 var utils = __webpack_require__(0);
 var InterceptorManager = __webpack_require__(29);
 var dispatchRequest = __webpack_require__(30);
@@ -41555,7 +41563,7 @@ module.exports = InterceptorManager;
 var utils = __webpack_require__(0);
 var transformData = __webpack_require__(31);
 var isCancel = __webpack_require__(8);
-var defaults = __webpack_require__(1);
+var defaults = __webpack_require__(2);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -41805,7 +41813,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(37)
 }
-var Component = __webpack_require__(2)(
+var Component = __webpack_require__(1)(
   /* script */
   __webpack_require__(42),
   /* template */
@@ -42297,7 +42305,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var Component = __webpack_require__(2)(
+var Component = __webpack_require__(1)(
   /* script */
   __webpack_require__(45),
   /* template */
@@ -42309,8 +42317,156 @@ var Component = __webpack_require__(2)(
   /* moduleIdentifier (server only) */
   null
 )
+Component.options.__file = "/Users/connorleech/Projects/laravel-forum/resources/assets/js/pages/Thread.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-3c2dfac9", Component.options)
+  } else {
+    hotAPI.reload("data-v-3c2dfac9", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 45 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Replies_vue__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Replies_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_Replies_vue__);
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['initialRepliesCount'],
+	components: { Replies: __WEBPACK_IMPORTED_MODULE_0__components_Replies_vue___default.a },
+	data: function data() {
+		return {
+			repliesCount: this.initialRepliesCount
+		};
+	}
+});
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__(1)(
+  /* script */
+  __webpack_require__(47),
+  /* template */
+  __webpack_require__(57),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/connorleech/Projects/laravel-forum/resources/assets/js/components/Replies.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] Replies.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-8c4f563a", Component.options)
+  } else {
+    hotAPI.reload("data-v-8c4f563a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 47 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Reply_vue__ = __webpack_require__(48);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Reply_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Reply_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__NewReply_vue__ = __webpack_require__(54);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__NewReply_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__NewReply_vue__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['data'],
+	components: { Reply: __WEBPACK_IMPORTED_MODULE_0__Reply_vue___default.a, NewReply: __WEBPACK_IMPORTED_MODULE_1__NewReply_vue___default.a },
+	data: function data() {
+		return {
+			items: this.data,
+			endpoint: location.pathname + '/replies' // gets current url
+		};
+	},
+
+	methods: {
+		add: function add(reply) {
+			this.items.push(reply);
+			this.$emit('added');
+		},
+		remove: function remove(index) {
+			this.items.splice(index, 1);
+			this.$emit('removed');
+			flash('Reply was deleted!');
+		}
+	}
+});
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__(1)(
+  /* script */
+  __webpack_require__(49),
+  /* template */
+  __webpack_require__(53),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
 Component.options.__file = "/Users/connorleech/Projects/laravel-forum/resources/assets/js/components/Reply.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] Reply.vue: functional components are not supported with templates, they should use render functions.")}
 
 /* hot reload */
 if (false) {(function () {
@@ -42332,31 +42488,79 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 45 */
+/* 49 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Favorite_vue__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Favorite_vue__ = __webpack_require__(50);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Favorite_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Favorite_vue__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['attributes'],
+	props: ['data'],
 	components: {
 		Favorite: __WEBPACK_IMPORTED_MODULE_0__Favorite_vue___default.a
 	},
 	data: function data() {
 		return {
+			id: this.data.id,
 			editing: false,
-			body: this.attributes.body // passed in the reply from Laravel
+			body: this.data.body // passed in the reply from Laravel
 		};
 	},
 
+	computed: {
+		signedIn: function signedIn() {
+			return window.App.signedIn;
+		},
+		canUpdate: function canUpdate() {
+			var _this = this;
+
+			return this.authorize(function (user) {
+				return _this.data.user_id == user.id;
+			});
+		}
+	},
 	methods: {
 		update: function update() {
-			axios.patch("/replies/" + this.attributes.id, {
+			axios.patch("/replies/" + this.data.id, {
 				body: this.body
 			});
 
@@ -42364,26 +42568,28 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			flash('Your reply was updated');
 		},
 		destroy: function destroy() {
-			axios.delete("/replies/" + this.attributes.id);
+			axios.delete("/replies/" + this.data.id);
 
 			// old school jQuery fadeOut
-			$(this.$el).fadeOut(300, function () {
-				flash('Your reply has been deleted');
-			});
+			// $(this.$el).fadeOut(300, () => {
+			// 	flash('Your reply has been deleted');
+			// });
+
+			this.$emit('deleted', this.data.id);
 		}
 	}
 });
 
 /***/ }),
-/* 46 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var Component = __webpack_require__(2)(
+var Component = __webpack_require__(1)(
   /* script */
-  __webpack_require__(47),
+  __webpack_require__(51),
   /* template */
-  __webpack_require__(48),
+  __webpack_require__(52),
   /* styles */
   null,
   /* scopeId */
@@ -42415,7 +42621,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 47 */
+/* 51 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -42464,7 +42670,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 48 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -42493,7 +42699,284 @@ if (false) {
 }
 
 /***/ }),
-/* 49 */
+/* 53 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "panel panel-default",
+    attrs: {
+      "id": 'reply-' + _vm.id
+    }
+  }, [_c('div', {
+    staticClass: "panel-heading"
+  }, [_c('div', {
+    staticClass: "level"
+  }, [_c('h5', {
+    staticClass: "flex"
+  }, [_c('a', {
+    attrs: {
+      "href": '/profiles/' + _vm.data.owner.name
+    },
+    domProps: {
+      "textContent": _vm._s(_vm.data.owner.name)
+    }
+  }), _vm._v(" said " + _vm._s(_vm.data.created_at) + "...\n\t\t\t")]), _vm._v(" "), (_vm.signedIn) ? _c('div', [_c('favorite', {
+    attrs: {
+      "reply": _vm.data
+    }
+  })], 1) : _vm._e()])]), _vm._v(" "), _c('div', {
+    staticClass: "panel-body"
+  }, [(_vm.editing) ? _c('div', [_c('div', {
+    staticClass: "form-group"
+  }, [_c('textarea', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.body),
+      expression: "body"
+    }],
+    staticClass: "form-control",
+    domProps: {
+      "value": (_vm.body)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.body = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('button', {
+    staticClass: "btn btn-xs btn-primary",
+    on: {
+      "click": _vm.update
+    }
+  }, [_vm._v("Update")]), _vm._v(" "), _c('button', {
+    staticClass: "btn btn-xs btn-link",
+    on: {
+      "click": function($event) {
+        _vm.editing = false
+      }
+    }
+  }, [_vm._v("Cancel")])]) : _c('div', {
+    domProps: {
+      "textContent": _vm._s(_vm.body)
+    }
+  })]), _vm._v(" "), (_vm.canUpdate) ? _c('div', {
+    staticClass: "panel-footer level"
+  }, [_c('button', {
+    staticClass: "btn btn-xs mr-1",
+    on: {
+      "click": function($event) {
+        _vm.editing = true
+      }
+    }
+  }, [_vm._v("Edit")]), _vm._v(" "), _c('button', {
+    staticClass: "btn btn-xs btn-danger mr-1",
+    on: {
+      "click": _vm.destroy
+    }
+  }, [_vm._v("Delete")])]) : _vm._e()])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-02d76af6", module.exports)
+  }
+}
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__(1)(
+  /* script */
+  __webpack_require__(55),
+  /* template */
+  __webpack_require__(56),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/connorleech/Projects/laravel-forum/resources/assets/js/components/NewReply.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] NewReply.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-c02ec442", Component.options)
+  } else {
+    hotAPI.reload("data-v-c02ec442", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 55 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['endpoint'],
+	data: function data() {
+		return {
+			body: ''
+		};
+	},
+
+	computed: {
+		signedIn: function signedIn() {
+			return window.App.signedIn;
+		}
+	},
+	methods: {
+		addReply: function addReply() {
+			var _this = this;
+
+			axios.post(this.endpoint, {
+				body: this.body
+			}).then(function (_ref) {
+				var data = _ref.data;
+
+				_this.body = '';
+				flash('Your reply has been created');
+				_this.$emit('created', data);
+			});
+		}
+	}
+});
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', [(_vm.signedIn) ? _c('div', [_c('div', {
+    staticClass: "form-group"
+  }, [_c('textarea', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.body),
+      expression: "body"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      "name": "body",
+      "id": "body",
+      "placeholder": "Have something to say?",
+      "rows": "5",
+      "required": ""
+    },
+    domProps: {
+      "value": (_vm.body)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.body = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('button', {
+    staticClass: "btn btn-default",
+    attrs: {
+      "type": "submit"
+    },
+    on: {
+      "click": _vm.addReply
+    }
+  }, [_vm._v("Post")])]) : _c('p', {
+    staticClass: "text-center"
+  }, [_vm._v("\n\t\tPlease "), _c('a', {
+    attrs: {
+      "href": "/login"
+    }
+  }, [_vm._v("sign in")]), _vm._v(" to participate in this discussion\n\t")])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-c02ec442", module.exports)
+  }
+}
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', [_vm._l((_vm.items), function(reply, index) {
+    return _c('div', [_c('reply', {
+      attrs: {
+        "data": reply
+      },
+      on: {
+        "deleted": function($event) {
+          _vm.remove(index)
+        }
+      }
+    })], 1)
+  }), _vm._v(" "), _c('new-reply', {
+    attrs: {
+      "endpoint": _vm.endpoint
+    },
+    on: {
+      "created": _vm.add
+    }
+  })], 2)
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-8c4f563a", module.exports)
+  }
+}
+
+/***/ }),
+/* 58 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

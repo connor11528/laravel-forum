@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+<thread-view :initial-replies-count="{{ $thread->replies_count }}" inline-template>
 <div class="container">
     <div class="row">
         <div class="col-md-8">
@@ -29,34 +30,21 @@
                 </div>
             </div>
 
-            @foreach($replies as $reply)
-                @include('threads.reply')
-            @endforeach
+            <replies :data="{{ $thread->replies }}"
+                @added='repliesCount++'
+                @removed='repliesCount--'></replies>
 
-            {{ $replies->links() }}
-
-            @if(auth()->check())
-                <form method='POST' action='{{ $thread->path() . "/replies" }}'>
-                    {{ csrf_field() }}
-
-                    <div class='form-group'>
-                        <textarea name='body' id='body' class='form-control' placeholder='Write your reply here' rows='5'></textarea>
-                    </div>
-
-                    <button type='submit' class='btn btn-default'>Post</button>
-                </form>
-            @else
-                <p>Please <a href='{{ route("login") }}'>sign in</a> to post a reply to this thread.
-            @endif
+            {{-- {{ $replies->links() }} --}}
         </div>
         <div class='col-md-4'>
             <div class="panel panel-default">
 
                 <div class="panel-body">
-                    This thread was published {{ $thread->created_at->diffForHumans() }} by <a href=''>{{ $thread->creator->name }}</a> and currently has {{ $thread->replies_count }} {{ str_plural('reply', $thread->replies_count) }}.
+                    This thread was published {{ $thread->created_at->diffForHumans() }} by <a href=''>{{ $thread->creator->name }}</a> and currently has <span v-text='repliesCount'></span> {{ str_plural('reply', $thread->replies_count) }}.
                 </div>
             </div>
         </div>
     </div>
 </div>
+</thread-view>
 @endsection
