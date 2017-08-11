@@ -19,11 +19,6 @@ class Thread extends Model
     {
         parent::boot();
 
-        // query scope automatically applied to app queries
-        static::addGlobalScope('replyCount', function($builder){
-            $builder->withCount('replies');
-        });
-
         // delete associated replies when removing thread
         static::deleting(function($thread){
             

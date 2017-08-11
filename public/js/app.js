@@ -58172,6 +58172,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			// es6 destructuring
 			this.dataSet = data;
 			this.items = data.data;
+
+			window.scrollTo(0, 0);
 		}
 	}
 });

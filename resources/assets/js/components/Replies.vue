@@ -42,6 +42,8 @@ export default {
 		refresh({data}){ // es6 destructuring
 			this.dataSet = data;
 			this.items = data.data;
+
+			window.scrollTo(0, 0);
 		}
 	}
 }
