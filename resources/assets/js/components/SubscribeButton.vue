@@ -1,21 +1,26 @@
 <template>
-	<div class='btn btn-default' @click='subscribe'>Subscribe</div>
+	<div :class='classes' @click='subscribe'>Subscribe</div>
 </template>
 
 <script>
 import axios from 'axios'
 
 export default {
-	data(){
-		return {}
-	},
+	props: ['subscribed'],
 	methods: {
 		subscribe(){
-			axios.post(`${location.pathname}/subscriptions`)
+			let requestType = this.subscribed ? 'delete' : 'post'
+
+			axios[requestType](`${location.pathname}/subscriptions`)
 				.then((res)=>{
 					console.log(res);
-					flash('Subscribed to thread')
+					this.subscribed = !this.subscribed;
 				})
+		}
+	},
+	computed: {
+		classes(){
+			return ['btn', this.subscribed ? "btn-primary" : "btn-default"]
 		}
 	}
 }

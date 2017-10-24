@@ -59072,16 +59072,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	data: function data() {
-		return {};
-	},
-
+	props: ['subscribed'],
 	methods: {
 		subscribe: function subscribe() {
-			__WEBPACK_IMPORTED_MODULE_0_axios___default.a.post(location.pathname + '/subscriptions').then(function (res) {
+			var _this = this;
+
+			var requestType = this.subscribed ? 'delete' : 'post';
+
+			__WEBPACK_IMPORTED_MODULE_0_axios___default.a[requestType](location.pathname + '/subscriptions').then(function (res) {
 				console.log(res);
-				flash('Subscribed to thread');
+				_this.subscribed = !_this.subscribed;
 			});
+		}
+	},
+	computed: {
+		classes: function classes() {
+			return ['btn', this.subscribed ? "btn-primary" : "btn-default"];
 		}
 	}
 });
@@ -59092,7 +59098,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "btn btn-default",
+    class: _vm.classes,
     on: {
       "click": _vm.subscribe
     }

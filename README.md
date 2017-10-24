@@ -23,6 +23,11 @@ I'm blogging my way through the advanced Laracast course: [Let's Build A Forum w
 # Clear cache
 $ php artisan cache:clear
 
+# Run tests 
+$ phpunit
+// OR 
+$ ./vendor/bin/phpunit
+
 # Clear config 
 $ php artisan config:clear
 

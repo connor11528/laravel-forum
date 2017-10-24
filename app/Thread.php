@@ -14,6 +14,8 @@ class Thread extends Model
 
     protected $with = ['creator', 'channel'];
 
+    // add these properties to model output
+    // adds isSubscribedTo property to the JSON
     protected $appends = ['isSubscribedTo'];
     
     // Boot the model
@@ -65,29 +67,30 @@ class Thread extends Model
     }
 
     // a thread can have many subscriptions
-    public function subscribtions()
+    public function subscriptions()
     {
         return $this->hasMany(ThreadSubscription::class);
     }
 
     // Determine if current user is subscribed to a thread
+    // 'custom eloquent accessor'
     public function getIsSubscribedToAttribute()
     {
-        return $this->subscribtions()
+        return $this->subscriptions()
             ->where('user_id', auth()->id())
             ->exists();
     }
 
     public function subscribe($userId = null)
     {
-        $this->subscribtions()->create([
+        $this->subscriptions()->create([
             'user_id' => $userId ?: auth()->id()
         ]);
     }
 
     public function unsubscribe($userId = null)
     {
-        $this->subscribtions()
+        $this->subscriptions()
             ->where('user_id', $userId ?: auth()->id())
             ->delete();
     }
