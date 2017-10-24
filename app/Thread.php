@@ -13,6 +13,8 @@ class Thread extends Model
     protected $guarded = [];
 
     protected $with = ['creator', 'channel'];
+
+    protected $appends = ['isSubscribedTo'];
     
     // Boot the model
     protected static function boot()
@@ -60,5 +62,33 @@ class Thread extends Model
     public function scopeFilter($query, ThreadFilters $filters)
     {
         return $filters->apply($query);
+    }
+
+    // a thread can have many subscriptions
+    public function subscribtions()
+    {
+        return $this->hasMany(ThreadSubscription::class);
+    }
+
+    // Determine if current user is subscribed to a thread
+    public function getIsSubscribedToAttribute()
+    {
+        return $this->subscribtions()
+            ->where('user_id', auth()->id())
+            ->exists();
+    }
+
+    public function subscribe($userId = null)
+    {
+        $this->subscribtions()->create([
+            'user_id' => $userId ?: auth()->id()
+        ]);
+    }
+
+    public function unsubscribe($userId = null)
+    {
+        $this->subscribtions()
+            ->where('user_id', $userId ?: auth()->id())
+            ->delete();
     }
 }

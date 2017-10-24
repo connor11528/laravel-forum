@@ -11,6 +11,8 @@
 |
 */
 
+Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -29,11 +31,15 @@ Route::post('threads', 'ThreadController@store');
 Route::post('/threads/{channel}/{thread}/replies', 'RepliesController@store');
 Route::get('/threads/{channel}/{thread}/replies', 'RepliesController@index');
 
+Route::post('/threads/{channel}/{thread}/subscriptions', 'ThreadSubscriptionsController@store')->middleware('auth');
+Route::delete('/threads/{channel}/{thread}/subscriptions', 'ThreadSubscriptionsController@destroy')->middleware('auth');
+
 // Replies
 Route::delete('/replies/{reply}', 'RepliesController@destroy');
 Route::post('/replies/{reply}/favorites', 'FavoritesController@store');
 Route::delete('/replies/{reply}/favorites', 'FavoritesController@destroy');
 Route::patch('/replies/{reply}', 'RepliesController@update');
+
 
 // Profile
 Route::get('/profiles/{user}', 'ProfilesController@show')->name('profile');

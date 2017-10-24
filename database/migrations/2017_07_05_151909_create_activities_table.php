@@ -13,6 +13,7 @@ class CreateActivitiesTable extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('activities');
         Schema::create('activities', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id')->index();

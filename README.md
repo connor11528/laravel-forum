@@ -16,3 +16,25 @@ I'm blogging my way through the advanced Laracast course: [Let's Build A Forum w
 ### [Part 4](https://medium.com/@connorleech/build-an-online-forum-with-laravel-give-the-user-the-ability-to-create-threads-part-4-ccdb6badc618): Give the User the ability to create Threads
 
 ### [Part 5](https://medium.com/@connorleech/testing-helpers-in-laravel-5-4-363ac47a8504): Testing Helpers in Laravel 5.4
+
+### Helpful commands
+
+```
+# Clear cache
+$ php artisan cache:clear
+
+# Clear config 
+$ php artisan config:clear
+
+# Migrate or refresh database
+$ php artisan migrate:refresh
+$ php artisan migrate:rollback
+
+# Seed database with db seeders
+$ php artisan db:seed 
+
+# Seed database with model factories
+$ php artisan tinker
+> factory('App\Thread', 50)->create();
+
+```
