@@ -25,14 +25,8 @@ class Thread extends Model
         parent::boot();
 
         // delete associated replies when removing thread
-        static::deleting(function($thread){
-            
+        static::deleting(function($thread){        
             $thread->replies->each->delete();
-
-            // same as:
-            // $thread->replies->each(function($reply){
-            //     $reply->delete();
-            // });
         });
     }
 
@@ -61,10 +55,15 @@ class Thread extends Model
         // create and save the reply
         $reply = $this->replies()->create($reply); 
 
-        // for every subscriber, send them a notification
-        foreach($this->subscriptions as $subscription){
-            $subscription->user->notify(new ThreadWasUpdated($this, $reply));
-        }
+        $this->subscriptions 
+            // get subscribers that did not leave the reply
+            ->filter(function ($sub) use ($reply){
+                return $sub->user_id != $reply->user_id;
+            })
+            // send each of them a notification
+            ->each(function($sub) use ($reply){
+                $sub->user->notify(new ThreadWasUpdated($this, $reply));
+            });
 
         return $reply;
     }
@@ -95,6 +94,8 @@ class Thread extends Model
         $this->subscriptions()->create([
             'user_id' => $userId ?: auth()->id()
         ]);
+
+        return $this;
     }
 
     public function unsubscribe($userId = null)
@@ -102,5 +103,7 @@ class Thread extends Model
         $this->subscriptions()
             ->where('user_id', $userId ?: auth()->id())
             ->delete();
+
+        return $this;
     }
 }

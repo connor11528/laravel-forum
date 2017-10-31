@@ -18,17 +18,8 @@ class SubscribeToThreadsTest extends TestCase
 		// user subscribes to thread
 		$this->post($thread->path() . '/subscriptions');
 
-		// check notifications is empty
-		$this->assertCount(0, auth()->user()->notifications);
-
-		// leave reply
-		$thread->addReply([
-			'user_id' => auth()->id(),
-			'body' => "reply to a thread here"
-		]);
-
-		// get fresh instance of user's notifications and check that there's one
-		$this->assertCount(1, auth()->user()->fresh()->notifications);
+		$this->assertCount(1, $thread->fresh()->subscriptions);
+		
 	}
 
 	/** @test **/
