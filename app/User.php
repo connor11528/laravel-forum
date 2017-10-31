@@ -7,6 +7,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
+    // Laravel notification
+    // adds a notify method as well as others
+    // https://laravel.com/docs/5.5/notifications
     use Notifiable;
 
     /**

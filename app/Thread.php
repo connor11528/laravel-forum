@@ -5,6 +5,7 @@ namespace App;
 use App\Filters\ThreadFilters;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Notifications\ThreadWasUpdated;
 
 class Thread extends Model
 {
@@ -57,7 +58,15 @@ class Thread extends Model
 
     public function addReply($reply)
     {
-        return $this->replies()->create($reply); 
+        // create and save the reply
+        $reply = $this->replies()->create($reply); 
+
+        // for every subscriber, send them a notification
+        foreach($this->subscriptions as $subscription){
+            $subscription->user->notify(new ThreadWasUpdated($this, $reply));
+        }
+
+        return $reply;
     }
 
     // Apply all the relevant thread filters
