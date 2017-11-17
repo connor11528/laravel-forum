@@ -49,7 +49,7 @@ class NotificationsTest extends TestCase
     /** @test **/
     public function a_user_can_mark_a_notification_as_read()
     {
-        
+
         create(DatabaseNotification::class);
 
 		$user = auth()->user();
