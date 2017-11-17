@@ -57,9 +57,7 @@ class Thread extends Model
 
         $this->subscriptions 
             // get subscribers that did not leave the reply
-            ->filter(function ($sub) use ($reply){
-                return $sub->user_id != $reply->user_id;
-            })
+            ->where('user_id', '!=', $reply->user_id)
             // send each of them a notification
             ->each->notify($reply);
 

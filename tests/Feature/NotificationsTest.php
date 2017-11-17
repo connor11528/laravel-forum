@@ -30,7 +30,7 @@ class NotificationsTest extends TestCase
 		// signed in user leaves reply on thread
 		$thread->addReply([
 			'user_id' => auth()->id(),
-			'body' => "reply to a thread here"
+			'body' => 'reply to a thread here'
 		]);
 
 		// get fresh instance of user's notifications and check that there is none
@@ -39,7 +39,7 @@ class NotificationsTest extends TestCase
 		// new user leaves reply on thread
 		$thread->addReply([
 			'user_id' => create('App\User')->id,
-			'body' => "reply to a thread here"
+			'body' => 'reply to a thread here'
 		]);
 
 		// notify the logged in user with one notification
@@ -49,7 +49,7 @@ class NotificationsTest extends TestCase
     /** @test **/
     public function a_user_can_mark_a_notification_as_read()
     {
-        
+
         create(DatabaseNotification::class);
 
 		$user = auth()->user();
