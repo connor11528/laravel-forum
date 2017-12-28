@@ -18,6 +18,10 @@ class Thread extends Model
     // add these properties to model output
     // adds isSubscribedTo property to the JSON
     protected $appends = ['isSubscribedTo'];
+
+    protected $casts = [
+        'locked' => 'boolean'
+    ];
     
     // Boot the model
     protected static function boot()
@@ -28,11 +32,15 @@ class Thread extends Model
         static::deleting(function($thread){        
             $thread->replies->each->delete();
         });
+
+        static::created(function($thread){
+            $thread->update(['slug' => $thread->title]);
+        });
     }
 
     public function path()
     {
-    	return "/threads/{$this->channel->slug}/{$this->id}";
+    	return "/threads/{$this->channel->slug}/{$this->slug}";
     }
 
     public function replies()
@@ -101,5 +109,11 @@ class Thread extends Model
             ->delete();
 
         return $this;
+    }
+
+    public function hasUpdatesFor()
+    {
+        $key = sprintf('users.%s.visits.%s', auth()->id(), $this->id);
+        return $this->updated_at > cache($key);
     }
 }
